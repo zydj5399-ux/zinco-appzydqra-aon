@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == "zydj5399@gmail.com";
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Validation Blueprints ---
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'balance', 'totalProfit', 'aiStatus'])
+        && data.uid is string
+        && data.email is string
+        && data.balance is number
+        && data.totalProfit is number
+        && data.monthlyProjected is number
+        && data.activeTrades is number
+        && data.totalInvested is number
+        && data.aiStatus in ['idle', 'active']
+        && data.email.size() < 256;
+    }
+
+    function isValidTransaction(data) {
+      return data.keys().hasAll(['userId', 'amount', 'type', 'status', 'createdAt'])
+        && data.userId is string
+        && data.amount is number
+        && data.amount > 0
+        && data.type in ['deposit', 'withdraw']
+        && data.status in ['pending', 'approved', 'rejected']
+        && (data.phone == null || (data.phone is string && data.phone.size() <= 20))
+        && (data.fullName == null || (data.fullName is string && data.fullName.size() <= 100));
+    }
+
+    // --- Collection Routes ---
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin(); // Only admins can list users
+      
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      
+      // Updates: Users can only update their own profile with strict structure
+      // Admins can update any user (e.g., to adjust balance or approval)
+      allow update: if (isOwner(userId) || isAdmin()) && isValidUser(incoming());
+    }
+
+    // 2. Transactions Collection
+    match /transactions/{transactionId} {
+      allow get: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      
+      allow create: if isSignedIn() 
+        && incoming().userId == request.auth.uid 
+        && isValidTransaction(incoming());
+        
+      allow update, delete: if isAdmin();
+    }
+
+    // 3. Platform Settings
+    match /platform_settings/{settingId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}

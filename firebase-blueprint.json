@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account and investment statistics",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "balance": { "type": "number" },
+        "totalProfit": { "type": "number" },
+        "monthlyProjected": { "type": "number" },
+        "activeTrades": { "type": "number" },
+        "totalInvested": { "type": "number" },
+        "aiStatus": { "type": "string", "enum": ["idle", "active"] },
+        "level": { "type": "string" },
+        "riskSettings": { "$ref": "RiskSettings" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "balance"]
+    },
+    "RiskSettings": {
+      "title": "Risk Management Settings",
+      "description": "Configuration for AI risk handling",
+      "type": "object",
+      "properties": {
+        "stopLossEnabled": { "type": "boolean" },
+        "stopLossThreshold": { "type": "number" },
+        "automaticStopLoss": { "type": "boolean" },
+        "notificationLevel": { "type": "string" }
+      }
+    },
+    "Transaction": {
+      "title": "Financial Transaction",
+      "description": "Deposit or withdrawal request",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "amount": { "type": "number" },
+        "type": { "type": "string", "enum": ["deposit", "withdraw"] },
+        "method": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "phone": { "type": "string" },
+        "fullName": { "type": "string" },
+        "cardNumber": { "type": "string" },
+        "proofId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "amount", "type", "status"]
+    },
+    "PlatformSettings": {
+      "title": "Platform Accounts",
+      "description": "Admin-defined accounts for user deposits",
+      "type": "object",
+      "properties": {
+        "zainCash": { "type": "string" },
+        "asiaHawala": { "type": "string" },
+        "bankIban": { "type": "string" },
+        "creditCard": { "type": "string" },
+        "binanceId": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Individual user statistics and settings"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Audit log of all financial movements"
+    },
+    "/platform_settings/accounts": {
+      "schema": "PlatformSettings",
+      "description": "Shared platform payment details"
+    }
+  }
+}

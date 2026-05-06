@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#06b6d4" />
+    <meta name="description" content="زينكو - استثمارك الذكي في التداول الآلي والذكاء الاصطناعي." />
+    
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Social Sharing Meta Tags -->
+    <meta property="og:title" content="Zinco | استثمارك الذكي" />
+    <meta property="og:description" content="ابدأ رحلتك في عالم التداول الذكي مع منصة زينكو الاحترافية." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/512px.svg" />
+    
+    <title>زينكو - منصة الاستثمار الذكية</title>
+    <meta name="keywords" content="تداول آلي, ذكاء اصطناعي, استثمار ذكي, Zinco, Smart Trade, تداول العملات الرقمية, استثمار آمن" />
+    <meta name="author" content="Zinco AI Team" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- External App (PWA) Optimizations -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="زينكو" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="زينكو" />
+    <link rel="apple-touch-icon" href="https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/512px.svg" />
+    <link rel="icon" type="image/svg+xml" href="https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/48px.svg" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(reg => {
+              console.log('Zinco SW Registered');
+              // Check for updates
+              reg.onupdatefound = () => {
+                const installingWorker = reg.installing;
+                installingWorker.onstatechange = () => {
+                  if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('New content is available; please refresh.');
+                  }
+                };
+              };
+            })
+            .catch(err => console.log('Zinco SW Registration failed', err));
+        });
+      }
+    </script>
+
+    <!-- Advanced JSON-LD Structured Data for Google Search -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "name": "Zinco",
+          "url": "https://profitstream-ai.app",
+          "logo": "https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/512px.svg",
+          "description": "المنصة الرائدة في التداول الآلي باستخدام الذكاء الاصطناعي."
+        },
+        {
+          "@type": "WebSite",
+          "url": "https://profitstream-ai.app",
+          "name": "Zinco - منصة المستثمر الذكي",
+          "inLanguage": "ar"
+        }
+      ]
+    }
+    </script>
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Zinco - المنصة الذكية" />
+    <meta property="og:description" content="Zinco هي الخيار الأول للمستثمرين الباحثين عن الأمان." />
+    <meta property="og:image" content="https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/512px.svg" />
+    <meta property="og:url" content="https://profitstream-ai.app" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
