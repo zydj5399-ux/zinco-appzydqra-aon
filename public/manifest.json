@@ -1,35 +1,30 @@
 {
-  "name": "زينكو - استثمارك الذكي",
-  "short_name": "زينكو",
-  "description": "منصة زينكو المتطورة للتداول الآلي والذكاء الاصطناعي - طريقك نحو الاستثمار الآمن.",
+  "name": "Zinco AI Investment",
+  "short_name": "Zinco",
+  "description": "منصة الاستثمار الذكي والتداول بالذكاء الاصطناعي",
   "id": "/?source=pwa",
   "start_url": "/?source=pwa",
   "display": "standalone",
-  "display_override": ["standalone", "window-controls-overlay"],
-  "orientation": "portrait-primary",
-  "scope": "/",
-  "theme_color": "#06b6d4",
   "background_color": "#05070a",
-  "dir": "rtl",
-  "lang": "ar",
-  "categories": ["finance", "trading", "business"],
+  "theme_color": "#06b6d4",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/192px.svg",
-      "type": "image/svg+xml",
       "sizes": "192x192",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
       "src": "https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/512px.svg",
-      "type": "image/svg+xml",
       "sizes": "512x512",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
       "src": "https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/512px.svg",
-      "type": "image/svg+xml",
       "sizes": "512x512",
+      "type": "image/svg+xml",
       "purpose": "maskable"
     }
   ],
@@ -41,6 +36,5 @@
       "form_factor": "wide",
       "label": "Zinco Dashboard"
     }
-  ],
-  "prefer_related_applications": false
+  ]
 }

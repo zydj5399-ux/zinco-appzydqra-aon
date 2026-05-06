@@ -4,7 +4,7 @@ import { Cpu, LogIn, ShieldCheck, Zap, Mail, ArrowRight, Loader2, CheckCircle2, 
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
-  const { emailLogin, emailSignUp, forgotPassword } = useAuth();
+  const { emailLogin, googleLogin, emailSignUp, forgotPassword } = useAuth();
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -30,10 +30,6 @@ export default function Login() {
       } else if (mode === 'signup') {
         setStatus('loading');
         await new Promise(r => setTimeout(r, 1500));
-        // Referral code is handled purely as local persistence/demo here
-        if (referralCode) {
-          console.log('User signed up with referral code:', referralCode);
-        }
         await emailSignUp(email, password, name, rememberMe);
         setStatus('success'); 
       }
@@ -41,6 +37,18 @@ export default function Login() {
       console.error(error);
       setStatus('error');
       setErrorMsg('فشلت العملية. يرجى التأكد من البيانات والمحاولة لاحقاً.');
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setStatus('loading');
+    setErrorMsg('');
+    try {
+      await googleLogin();
+    } catch (error: any) {
+      console.error(error);
+      setStatus('error');
+      setErrorMsg('فشل تسجيل الدخول عبر جوجل. يرجى المحاولة مرة أخرى.');
     }
   };
 
@@ -237,6 +245,25 @@ export default function Login() {
                       {mode === 'login' ? 'دخول' : 'إنشاء حساب'}
                     </>
                   )}
+                </button>
+
+                <div className="relative py-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-white/5"></div>
+                  </div>
+                  <div className="relative flex justify-center text-[10px] uppercase font-bold">
+                    <span className="bg-[#0a0d14] px-4 text-neutral-600">أو عبر الخدمات السحابية</span>
+                  </div>
+                </div>
+
+                <button 
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={status === 'loading'}
+                  className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all active:scale-[0.98] disabled:opacity-50"
+                >
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+                  تسجيل الدخول عبر جوجل
                 </button>
 
                 <div className="flex items-center justify-center px-1">

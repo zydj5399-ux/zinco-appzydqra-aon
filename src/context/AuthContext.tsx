@@ -3,6 +3,8 @@ import {
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut, 
   updateProfile,
   sendPasswordResetEmail,
@@ -17,6 +19,7 @@ interface AuthContextType {
   user: FirebaseUser | null;
   loading: boolean;
   emailLogin: (email: string, pass: string, rememberMe?: boolean) => Promise<void>;
+  googleLogin: () => Promise<void>;
   emailSignUp: (email: string, pass: string, name: string, rememberMe?: boolean) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   signOutUser: () => Promise<void>;
@@ -48,6 +51,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signInWithEmailAndPassword(auth, email, pass);
   };
 
+  const googleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+  };
+
   const emailSignUp = async (email: string, pass: string, name: string, rememberMe: boolean = true) => {
     await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
@@ -70,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, emailLogin, emailSignUp, forgotPassword, signOutUser, refreshUser, isAdmin }}>
+    <AuthContext.Provider value={{ user, loading, emailLogin, googleLogin, emailSignUp, forgotPassword, signOutUser, refreshUser, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

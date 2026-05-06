@@ -4,6 +4,17 @@ import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './context/AuthContext';
 
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(registration => {
+      console.log('Zinco SW registered: ', registration);
+    }).catch(registrationError => {
+      console.log('Zinco SW registration failed: ', registrationError);
+    });
+  });
+}
+
 try {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
