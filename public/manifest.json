@@ -26,6 +26,11 @@
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
+    },
+    {
+      "src": "https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/512px.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
     }
   ],
   "screenshots": [

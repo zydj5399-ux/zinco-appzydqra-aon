@@ -19,8 +19,7 @@ import {
   Loader2,
   Star,
   ArrowUp,
-  HelpCircle,
-  Smartphone
+  HelpCircle
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import RiskManagement from './components/RiskManagement';
@@ -414,34 +413,6 @@ export default function App() {
     );
   }
 
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-
-  // PWA Install Logic
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      // Only show if not already installed as PWA
-      if (!window.matchMedia('(display-mode: standalone)').matches) {
-        setTimeout(() => setShowInstallBanner(true), 4000);
-      }
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-  }, []);
-
-  const handleInstallApp = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setDeferredPrompt(null);
-      setShowInstallBanner(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="h-screen bg-[#05070a] flex items-center justify-center">
@@ -456,42 +427,6 @@ export default function App() {
 
   return (
     <div className="h-screen bg-[#05070a] text-white font-sans overflow-hidden flex selection:bg-cyan-500/30" dir="rtl">
-      {/* PWA Install Banner */}
-      <AnimatePresence>
-        {showInstallBanner && (
-          <motion.div 
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -100, opacity: 0 }}
-            className="fixed top-4 left-4 right-4 z-[100] flex justify-center pointer-events-none"
-          >
-            <div className="bg-cyan-500 text-black px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/20 max-w-md w-full pointer-events-auto">
-              <div className="bg-black/10 p-2 rounded-xl">
-                <Smartphone size={20} />
-              </div>
-              <div className="flex-1">
-                <p className="text-[11px] font-black leading-tight">تطبيق زينكو</p>
-                <p className="text-[9px] font-bold opacity-80 italic">ثبّت المنصة كـ تطبيق على جهازك الآن</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={handleInstallApp}
-                  className="bg-black text-white text-[10px] font-bold px-4 py-2 rounded-lg hover:bg-black/80 transition-all active:scale-95 cursor-pointer"
-                >
-                  تثبيت
-                </button>
-                <button 
-                  onClick={() => setShowInstallBanner(false)}
-                  className="p-1 hover:bg-black/5 rounded-lg transition-colors cursor-pointer"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Sidebar Navigation */}
       <AnimatePresence>
         {isSidebarOpen && (

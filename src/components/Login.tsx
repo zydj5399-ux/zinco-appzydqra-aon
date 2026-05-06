@@ -42,7 +42,21 @@ export default function Login() {
     } catch (error: any) {
       console.error(error);
       setStatus('error');
-      setErrorMsg('فشلت العملية. يرجى التأكد من البيانات والمحاولة لاحقاً.');
+      if (error.code === 'auth/invalid-credential') {
+        setErrorMsg('البيانات غير صحيحة. يرجى التأكد من البريد وكلمة المرور.');
+      } else if (error.code === 'auth/user-not-found') {
+        setErrorMsg('هذا الحساب غير موجود. يرجى التسجيل أولاً.');
+      } else if (error.code === 'auth/wrong-password') {
+        setErrorMsg('كلمة المرور غير صحيحة.');
+      } else if (error.code === 'auth/email-already-in-use') {
+        setErrorMsg('هذا البريد الإلكتروني مستخدم بالفعل.');
+      } else if (error.code === 'auth/invalid-email') {
+        setErrorMsg('تنسيق البريد الإلكتروني غير صحيح.');
+      } else if (error.code === 'auth/weak-password') {
+        setErrorMsg('كلمة المرور ضعيفة جداً (6 أحرف على الأقل).');
+      } else {
+        setErrorMsg('فشلت العملية. يرجى التأكد من البيانات والمحاولة لاحقاً.');
+      }
     }
   };
 
