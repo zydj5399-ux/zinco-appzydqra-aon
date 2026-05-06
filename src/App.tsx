@@ -530,15 +530,6 @@ export default function App() {
                 icon={<HelpCircle className="w-5 h-5" />}
                 label="مركز المساعدة"
               />
-              {canInstall && (
-                <button 
-                  onClick={handleInstallApp}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-neutral-400 hover:text-cyan-400 hover:bg-cyan-500/5 rounded-xl transition-all border border-cyan-500/20 mt-2 group"
-                >
-                  <Smartphone className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-bold">تثبيت تطبيق زينكو</span>
-                </button>
-              )}
               {isAdmin && (
                 <SidebarLink 
                   active={activeTab === 'admin'} 

@@ -40,20 +40,26 @@ export default function Login() {
         setStatus('success'); 
       }
     } catch (error: any) {
-      console.error(error);
+      console.error('Login Error:', error.code, error.message);
       setStatus('error');
-      if (error.code === 'auth/invalid-credential') {
+      
+      const errorCode = error.code;
+      if (errorCode === 'auth/invalid-credential') {
         setErrorMsg('البيانات غير صحيحة. يرجى التأكد من البريد وكلمة المرور.');
-      } else if (error.code === 'auth/user-not-found') {
+      } else if (errorCode === 'auth/user-not-found') {
         setErrorMsg('هذا الحساب غير موجود. يرجى التسجيل أولاً.');
-      } else if (error.code === 'auth/wrong-password') {
+      } else if (errorCode === 'auth/wrong-password') {
         setErrorMsg('كلمة المرور غير صحيحة.');
-      } else if (error.code === 'auth/email-already-in-use') {
+      } else if (errorCode === 'auth/email-already-in-use') {
         setErrorMsg('هذا البريد الإلكتروني مستخدم بالفعل.');
-      } else if (error.code === 'auth/invalid-email') {
+      } else if (errorCode === 'auth/invalid-email') {
         setErrorMsg('تنسيق البريد الإلكتروني غير صحيح.');
-      } else if (error.code === 'auth/weak-password') {
+      } else if (errorCode === 'auth/weak-password') {
         setErrorMsg('كلمة المرور ضعيفة جداً (6 أحرف على الأقل).');
+      } else if (errorCode === 'auth/network-request-failed') {
+        setErrorMsg('خطأ في الاتصال بالشبكة. يرجى التأكد من الإنترنت.');
+      } else if (errorCode === 'auth/too-many-requests') {
+        setErrorMsg('تم حظر المحاولات مؤقتاً لكثرة الطلبات. حاول لاحقاً.');
       } else {
         setErrorMsg('فشلت العملية. يرجى التأكد من البيانات والمحاولة لاحقاً.');
       }
@@ -66,9 +72,20 @@ export default function Login() {
     try {
       await googleLogin();
     } catch (error: any) {
-      console.error(error);
+      console.error('Google Login Error:', error.code, error.message);
       setStatus('error');
-      setErrorMsg('فشل تسجيل الدخول عبر جوجل. يرجى المحاولة مرة أخرى.');
+      
+      if (error.code === 'auth/popup-blocked') {
+        setErrorMsg('تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة لهذا الموقع.');
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        setErrorMsg('تم إغلاق نافذة تسجيل الدخول قبل اكتمال العملية.');
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        setErrorMsg('تم إلغاء طلب تسجيل الدخول.');
+      } else if (error.code === 'auth/network-request-failed') {
+        setErrorMsg('خطأ في الاتصال. يرجى التحقق من الشبكة.');
+      } else {
+        setErrorMsg('فشل تسجيل الدخول عبر جوجل. يرجى فتح الموقع في متصفح خارجي أو السماح بالنوافذ المنبثقة.');
+      }
     }
   };
 
