@@ -9,6 +9,7 @@ export default function Login() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -28,6 +29,11 @@ export default function Login() {
         await new Promise(r => setTimeout(r, 1000));
         await emailLogin(email, password, rememberMe);
       } else if (mode === 'signup') {
+        if (password !== confirmPassword) {
+          setStatus('error');
+          setErrorMsg('كلمات المرور غير متطابقة. يرجى التأكد والمحاولة مرة أخرى.');
+          return;
+        }
         setStatus('loading');
         await new Promise(r => setTimeout(r, 1500));
         await emailSignUp(email, password, name, rememberMe);
@@ -201,6 +207,30 @@ export default function Login() {
                     />
                   </div>
                 </div>
+
+                {mode === 'signup' && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="space-y-1.5"
+                  >
+                    <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">تأكيد كلمة المرور</label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
+                      <input 
+                        type="password"
+                        name="confirmPassword"
+                        id="confirmPassword"
+                        autoComplete="new-password"
+                        required={mode === 'signup'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-cyan-500/50 transition-all text-left"
+                      />
+                    </div>
+                  </motion.div>
+                )}
                 
                 <div className="flex items-center justify-between px-1">
                   <label className="flex items-center gap-2 cursor-pointer group">

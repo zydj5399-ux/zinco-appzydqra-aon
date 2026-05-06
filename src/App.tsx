@@ -19,7 +19,8 @@ import {
   Loader2,
   Star,
   ArrowUp,
-  HelpCircle
+  HelpCircle,
+  Smartphone
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import RiskManagement from './components/RiskManagement';
