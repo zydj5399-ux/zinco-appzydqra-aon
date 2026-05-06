@@ -19,7 +19,8 @@ import {
   Loader2,
   Star,
   ArrowUp,
-  HelpCircle
+  HelpCircle,
+  Smartphone
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import RiskManagement from './components/RiskManagement';
@@ -413,6 +414,37 @@ export default function App() {
     );
   }
 
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [canInstall, setCanInstall] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setCanInstall(true);
+      console.log('PWA: Ready to install');
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setCanInstall(false);
+    }
+
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+      setCanInstall(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="h-screen bg-[#05070a] flex items-center justify-center">
@@ -498,6 +530,15 @@ export default function App() {
                 icon={<HelpCircle className="w-5 h-5" />}
                 label="مركز المساعدة"
               />
+              {canInstall && (
+                <button 
+                  onClick={handleInstallApp}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-neutral-400 hover:text-cyan-400 hover:bg-cyan-500/5 rounded-xl transition-all border border-cyan-500/20 mt-2 group"
+                >
+                  <Smartphone className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-bold">تثبيت تطبيق زينكو</span>
+                </button>
+              )}
               {isAdmin && (
                 <SidebarLink 
                   active={activeTab === 'admin'} 

@@ -1,13 +1,15 @@
 {
-  "name": "Zinco AI Investment",
-  "short_name": "Zinco",
-  "description": "منصة الاستثمار الذكي والتداول بالذكاء الاصطناعي",
+  "name": "Zinco - AI Investment",
+  "short_name": "زينكو",
+  "description": "منصة زينكو المتطورة للتداول الآلي والذكاء الاصطناعي - طريقك نحو الاستثمار الآمن.",
   "id": "/?source=pwa",
   "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#05070a",
   "theme_color": "#06b6d4",
   "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "ar",
   "icons": [
     {
       "src": "https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/192px.svg",
@@ -26,11 +28,6 @@
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
-    },
-    {
-      "src": "https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/512px.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml"
     }
   ],
   "screenshots": [
@@ -40,6 +37,13 @@
       "type": "image/svg+xml",
       "form_factor": "wide",
       "label": "Zinco Dashboard"
+    },
+    {
+      "src": "https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/generating_tokens/default/512px.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "Zinco Mobile App"
     }
   ]
 }
