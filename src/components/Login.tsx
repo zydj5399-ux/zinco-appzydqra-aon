@@ -1,14 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Cpu, LogIn, ShieldCheck, Zap, Mail, ArrowRight, Loader2, CheckCircle2, Lock, UserPlus } from 'lucide-react';
+import { 
+  Cpu, LogIn, ShieldCheck, Zap, Mail, ArrowRight, 
+  Loader2, CheckCircle2, Lock, UserPlus, Smartphone, Hash, RefreshCcw 
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { RecaptchaVerifier, ConfirmationResult } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 export default function Login() {
-  const { emailLogin, googleLogin, emailSignUp, forgotPassword } = useAuth();
-  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
+  const { emailLogin, googleLogin, phoneLogin, emailSignUp, forgotPassword } = useAuth();
+  const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'phone'>('login');
+  const [isInIframe, setIsInIframe] = useState(false);
+
+  useEffect(() => {
+    setIsInIframe(window.self !== window.top);
+  }, []);
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [showOtpInput, setShowOtpInput] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
@@ -76,13 +91,60 @@ export default function Login() {
         setErrorMsg('تم حظر تسجيل الدخول. يرجى فتح الموقع في متصفح خارجي (Chrome) للمتابعة.');
       } else if (error.code === 'auth/popup-closed-by-user') {
         setErrorMsg('تم إغلاق نافذة تسجيل الدخول قبل اكتمال العملية.');
-      } else if (error.code === 'auth/cancelled-popup-request') {
-        setErrorMsg('تم إلغاء طلب تسجيل الدخول.');
       } else if (error.code === 'auth/network-request-failed') {
         setErrorMsg('خطأ في الاتصال. يرجى التحقق من الشبكة.');
       } else {
         setErrorMsg('فشل تسجيل الدخول عبر جوجل. يرجى فتح الموقع في متصفح خارجي أو السماح بالنوافذ المنبثقة.');
       }
+    }
+  };
+
+  const setupRecaptcha = () => {
+    if ((window as any).recaptchaVerifier) return (window as any).recaptchaVerifier;
+    
+    (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'invisible'
+    });
+    return (window as any).recaptchaVerifier;
+  };
+
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phoneNumber) return;
+    
+    setStatus('loading');
+    setErrorMsg('');
+    
+    try {
+      const appVerifier = setupRecaptcha();
+      const result = await phoneLogin(phoneNumber, appVerifier);
+      setConfirmationResult(result);
+      setShowOtpInput(true);
+      setStatus('idle');
+    } catch (error: any) {
+      console.error('Phone Auth Error:', error);
+      setStatus('error');
+      setErrorMsg('حدث خطأ أثناء إرسال الكود. تأكد من صحة الرقم (مثال: +964...) والمحاولة لاحقاً.');
+      if ((window as any).recaptchaVerifier) {
+        (window as any).recaptchaVerifier.clear();
+        (window as any).recaptchaVerifier = null;
+      }
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!verificationCode || !confirmationResult) return;
+
+    setStatus('loading');
+    setErrorMsg('');
+    try {
+      await confirmationResult.confirm(verificationCode);
+      // User is logged in automatically via AuthContext observer
+    } catch (error: any) {
+      console.error('OTP Error:', error);
+      setStatus('error');
+      setErrorMsg('كود التحقق غير صحيح. يرجى المحاولة مرة أخرى.');
     }
   };
 
@@ -138,7 +200,7 @@ export default function Login() {
                 الدخول للمنصة الآن
               </button>
             </motion.div>
-          ) : mode === 'login' || mode === 'signup' ? (
+          ) : mode === 'login' || mode === 'signup' || mode === 'phone' ? (
             <motion.div
               key="auth"
               initial={{ opacity: 0, x: 20 }}
@@ -146,35 +208,139 @@ export default function Login() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-6"
             >
+              <div id="recaptcha-container"></div>
+              
               <div className="flex flex-col items-center text-center">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.4)] mb-4">
                   <Cpu className="w-8 h-8 text-black" />
                 </div>
                 <h1 className="text-2xl font-black text-white mb-1">ZINCO</h1>
-                <p className="text-neutral-500 text-xs">{mode === 'login' ? 'سجل دخولك لبدء التداول' : 'أنشئ حساباً جديداً مجاناً'}</p>
+                <p className="text-neutral-500 text-xs">
+                  {mode === 'login' ? 'سجل دخولك لبدء التداول' : 
+                   mode === 'signup' ? 'أنشئ حساباً جديداً مجاناً' : 
+                   'تسجيل الدخول عبر الهاتف'}
+                </p>
               </div>
 
+              {isInIframe && (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 space-y-2">
+                  <p className="text-[10px] text-amber-400 font-bold leading-tight">
+                    لتجربة أفضل وتجنب مشاكل تسجيل الدخول، يرجى فتح الموقع في متصفح خارجي.
+                  </p>
+                  <button 
+                    onClick={() => window.open(window.location.href, '_blank')}
+                    className="w-full py-2 bg-amber-500 text-black text-[10px] font-black rounded-lg hover:bg-amber-400 transition-all flex items-center justify-center gap-2"
+                  >
+                    <ArrowRight size={14} className="rotate-180" />
+                    فتح في Chrome الآن
+                  </button>
+                </div>
+              )}
+
               <div className="space-y-4">
-                <button 
-                  type="button"
-                  onClick={handleGoogleLogin}
-                  disabled={status === 'loading'}
-                  className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all active:scale-[0.98] disabled:opacity-50"
-                >
-                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
-                  المتابعة عبر جوجل
-                </button>
+                {mode !== 'phone' && (
+                  <button 
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    disabled={status === 'loading'}
+                    className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all active:scale-[0.98] disabled:opacity-50"
+                  >
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+                    المتابعة عبر جوجل
+                  </button>
+                )}
+
+                {mode === 'login' && (
+                  <button 
+                    type="button"
+                    onClick={() => setMode('phone')}
+                    className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all active:scale-[0.98] disabled:opacity-50"
+                  >
+                    <Smartphone className="w-5 h-5 text-cyan-400" />
+                    الدخول عبر رقم الهاتف
+                  </button>
+                )}
 
                 <div className="relative py-2">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-white/5"></div>
                   </div>
                   <div className="relative flex justify-center text-[10px] uppercase font-bold">
-                    <span className="bg-[#0a0d14] px-4 text-neutral-600">أو عبر البريد الإلكتروني</span>
+                    <span className="bg-[#0a0d14] px-4 text-neutral-600">
+                      {mode === 'phone' ? 'بيانات الهاتف' : 'أو عبر البريد الإلكتروني'}
+                    </span>
                   </div>
                 </div>
 
-                <form onSubmit={handleAuthSubmit} className="space-y-4">
+                {mode === 'phone' ? (
+                  <div className="space-y-4">
+                    {!showOtpInput ? (
+                      <form onSubmit={handlePhoneSubmit} className="space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">رقم الهاتف (مع رمز الدولة)</label>
+                          <div className="relative">
+                            <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
+                            <input 
+                              type="tel"
+                              required
+                              value={phoneNumber}
+                              onChange={(e) => setPhoneNumber(e.target.value)}
+                              placeholder="+964 770 000 0000"
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-cyan-500/50 transition-all text-left"
+                            />
+                          </div>
+                        </div>
+                        <button 
+                          type="submit"
+                          disabled={status === 'loading'}
+                          className="w-full py-4 bg-cyan-500 text-black font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-3 hover:bg-cyan-400 transition-all active:scale-[0.98] shadow-lg shadow-cyan-500/20 disabled:opacity-50"
+                        >
+                          {status === 'loading' ? <Loader2 className="animate-spin" size={18} /> : 'إرسال كود التحقق'}
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => setMode('login')}
+                          className="w-full text-[10px] text-neutral-500 hover:text-white font-bold"
+                        >
+                          العودة للطرق الأخرى
+                        </button>
+                      </form>
+                    ) : (
+                      <form onSubmit={handleVerifyOtp} className="space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">كود التحقق (OTP)</label>
+                          <div className="relative">
+                            <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
+                            <input 
+                              type="text"
+                              required
+                              value={verificationCode}
+                              onChange={(e) => setVerificationCode(e.target.value)}
+                              placeholder="000000"
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-cyan-500/50 transition-all text-center tracking-[0.5em]"
+                            />
+                          </div>
+                        </div>
+                        <button 
+                          type="submit"
+                          disabled={status === 'loading'}
+                          className="w-full py-4 bg-emerald-500 text-black font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-3 hover:bg-emerald-400 transition-all active:scale-[0.98] shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+                        >
+                          {status === 'loading' ? <Loader2 className="animate-spin" size={18} /> : 'تأكيد الرمز والدخول'}
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => setShowOtpInput(false)}
+                          className="w-full flex items-center justify-center gap-2 text-[10px] text-neutral-500 hover:text-white font-bold"
+                        >
+                          <RefreshCcw size={12} />
+                          تغيير رقم الهاتف
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                ) : (
+                  <form onSubmit={handleAuthSubmit} className="space-y-4">
                   {mode === 'signup' && (
                     <motion.div 
                       initial={{ opacity: 0, height: 0 }}
@@ -340,14 +506,19 @@ export default function Login() {
                   <div className="flex items-center justify-center px-1">
                     <button 
                       type="button"
-                      onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                      onClick={() => {
+                        setMode(mode === 'login' ? 'signup' : 'login');
+                        setShowOtpInput(false);
+                        setConfirmationResult(null);
+                      }}
                       className="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold transition-colors"
                     >
-                      {mode === 'login' ? 'ليس لديك حساب؟ اضغط هنا' : 'لديك حساب بالفعل؟ سجل دخولك'}
+                      {mode === 'login' || mode === 'phone' ? 'ليس لديك حساب؟ اضغط هنا' : 'لديك حساب بالفعل؟ سجل دخولك'}
                     </button>
                   </div>
                 </form>
-              </div>
+              )}
+            </div>
 
               <div className="pt-4 flex flex-col items-center gap-3">
                  <div className="flex items-center gap-4 text-[10px] text-neutral-600 font-bold">

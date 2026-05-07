@@ -5,6 +5,9 @@ import {
   createUserWithEmailAndPassword, 
   signInWithPopup,
   GoogleAuthProvider,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+  ConfirmationResult,
   signOut, 
   updateProfile,
   sendPasswordResetEmail,
@@ -20,6 +23,7 @@ interface AuthContextType {
   loading: boolean;
   emailLogin: (email: string, pass: string, rememberMe?: boolean) => Promise<void>;
   googleLogin: () => Promise<void>;
+  phoneLogin: (phoneNumber: string, appVerifier: RecaptchaVerifier) => Promise<ConfirmationResult>;
   emailSignUp: (email: string, pass: string, name: string, rememberMe?: boolean) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   signOutUser: () => Promise<void>;
@@ -56,6 +60,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signInWithPopup(auth, provider);
   };
 
+  const phoneLogin = async (phoneNumber: string, appVerifier: RecaptchaVerifier) => {
+    return await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+  };
+
   const emailSignUp = async (email: string, pass: string, name: string, rememberMe: boolean = true) => {
     await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
@@ -78,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, emailLogin, googleLogin, emailSignUp, forgotPassword, signOutUser, refreshUser, isAdmin }}>
+    <AuthContext.Provider value={{ user, loading, emailLogin, googleLogin, phoneLogin, emailSignUp, forgotPassword, signOutUser, refreshUser, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );
