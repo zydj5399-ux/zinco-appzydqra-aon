@@ -72,8 +72,8 @@ export default function Login() {
       console.error('Google Login Error:', error.code, error.message);
       setStatus('error');
       
-      if (error.code === 'auth/popup-blocked') {
-        setErrorMsg('تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة لهذا الموقع.');
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+        setErrorMsg('تم حظر تسجيل الدخول. يرجى فتح الموقع في متصفح خارجي (Chrome) للمتابعة.');
       } else if (error.code === 'auth/popup-closed-by-user') {
         setErrorMsg('تم إغلاق نافذة تسجيل الدخول قبل اكتمال العملية.');
       } else if (error.code === 'auth/cancelled-popup-request') {
@@ -304,11 +304,23 @@ export default function Login() {
                     </button>
                   </div>
 
-                  {status === 'error' && (
+                {status === 'error' && (
+                  <div className="space-y-3">
                     <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl">
                       <p className="text-[10px] text-rose-400 font-bold leading-relaxed">{errorMsg}</p>
                     </div>
-                  )}
+                    {errorMsg.includes('متصفح خارجي') && (
+                      <button 
+                        type="button"
+                        onClick={() => window.open(window.location.href, '_blank')}
+                        className="w-full py-3 bg-white/10 text-white text-[10px] font-black rounded-xl border border-white/10 hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                      >
+                        <ArrowRight size={14} className="rotate-180" />
+                        فتح في متصفح Chrome مباشرة
+                      </button>
+                    )}
+                  </div>
+                )}
 
                   <button 
                     type="submit"

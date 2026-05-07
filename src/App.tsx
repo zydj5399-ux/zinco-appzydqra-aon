@@ -440,13 +440,11 @@ export default function App() {
 
   const handleInstallApp = async () => {
     if (isInIframe) {
-      alert("لتثبيت تطبيق زينكو، يرجى فتح الموقع في متصفح خارجي (chrome) بالضغط على 'مشاركة' ثم 'فتح في المتصفح'.");
+      window.open(window.location.href, '_blank');
       return;
     }
-    if (!deferredPrompt) {
-      alert("التطبيق مثبت بالفعل أو أن متصفحك لا يدعم التثبيت المباشر حالياً.");
-      return;
-    }
+    if (!deferredPrompt) return;
+    
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {

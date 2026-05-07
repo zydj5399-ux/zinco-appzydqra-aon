@@ -1,9 +1,5 @@
 {
   "name": "Zinco - AI Investment",
   "description": "منصة Zinco الاحترافية للتداول والاستثمار الآلي باستخدام الذكاء الاصطناعي.",
-  "requestFramePermissions": [
-    "camera",
-    "microphone",
-    "geolocation"
-  ]
+  "requestFramePermissions": []
 }
