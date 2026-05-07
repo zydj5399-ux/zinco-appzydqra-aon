@@ -416,8 +416,11 @@ export default function App() {
 
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [canInstall, setCanInstall] = useState(false);
+  const [isInIframe, setIsInIframe] = useState(false);
 
   useEffect(() => {
+    setIsInIframe(window.self !== window.top);
+
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -428,7 +431,7 @@ export default function App() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     
     // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
       setCanInstall(false);
     }
 
@@ -436,7 +439,14 @@ export default function App() {
   }, []);
 
   const handleInstallApp = async () => {
-    if (!deferredPrompt) return;
+    if (isInIframe) {
+      alert("لتثبيت تطبيق زينكو، يرجى فتح الموقع في متصفح خارجي (chrome) بالضغط على 'مشاركة' ثم 'فتح في المتصفح'.");
+      return;
+    }
+    if (!deferredPrompt) {
+      alert("التطبيق مثبت بالفعل أو أن متصفحك لا يدعم التثبيت المباشر حالياً.");
+      return;
+    }
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
@@ -530,6 +540,15 @@ export default function App() {
                 icon={<HelpCircle className="w-5 h-5" />}
                 label="مركز المساعدة"
               />
+              {(!(window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone)) && (
+                <button 
+                  onClick={handleInstallApp}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-neutral-400 hover:text-cyan-400 hover:bg-cyan-500/5 rounded-xl transition-all border border-cyan-500/10 mt-2 group"
+                >
+                  <Smartphone className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-bold">تثبيت التطبيق (Play)</span>
+                </button>
+              )}
               {isAdmin && (
                 <SidebarLink 
                   active={activeTab === 'admin'} 

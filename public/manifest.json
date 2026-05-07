@@ -4,10 +4,13 @@
   "description": "منصة زينكو المتطورة للتداول الآلي والذكاء الاصطناعي - طريقك نحو الاستثمار الآمن.",
   "id": "/?source=pwa",
   "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "minimal-ui"],
   "background_color": "#05070a",
   "theme_color": "#06b6d4",
   "orientation": "portrait-primary",
+  "prefer_related_applications": false,
   "dir": "rtl",
   "lang": "ar",
   "icons": [
