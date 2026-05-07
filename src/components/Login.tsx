@@ -25,8 +25,6 @@ export default function Login() {
     try {
       if (mode === 'login') {
         setStatus('loading');
-        // Simulated network delay for "Secure" feel
-        await new Promise(r => setTimeout(r, 1000));
         await emailLogin(email, password, rememberMe);
       } else if (mode === 'signup') {
         if (password !== confirmPassword) {
@@ -35,7 +33,6 @@ export default function Login() {
           return;
         }
         setStatus('loading');
-        await new Promise(r => setTimeout(r, 1500));
         await emailSignUp(email, password, name, rememberMe);
         setStatus('success'); 
       }
@@ -157,166 +154,7 @@ export default function Login() {
                 <p className="text-neutral-500 text-xs">{mode === 'login' ? 'سجل دخولك لبدء التداول' : 'أنشئ حساباً جديداً مجاناً'}</p>
               </div>
 
-              <form onSubmit={handleAuthSubmit} className="space-y-4">
-                {mode === 'signup' && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-1.5"
-                  >
-                    <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">الاسم الكامل</label>
-                    <div className="relative">
-                      <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
-                      <input 
-                        type="text"
-                        name="name"
-                        id="name"
-                        required={mode === 'signup'}
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="اسم المستثمر"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-bold text-xs outline-none focus:border-cyan-500/50 transition-all text-right"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-
-                {mode === 'signup' && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-1.5"
-                  >
-                    <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">رمز الإحالة (اختياري)</label>
-                    <div className="relative">
-                      <Zap className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-500/50" size={16} />
-                      <input 
-                        type="text"
-                        name="referral"
-                        id="referral"
-                        value={referralCode}
-                        onChange={(e) => setReferralCode(e.target.value)}
-                        placeholder="مثلاً: ZINCO-2026"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-amber-500/30 transition-all text-left"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">البريد الإلكتروني</label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
-                    <input 
-                      type="email"
-                      name="email"
-                      id="email"
-                      autoComplete="username email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="example@email.com"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-cyan-500/50 transition-all text-left"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">كلمة المرور</label>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
-                    <input 
-                      type="password"
-                      name="password"
-                      id="password"
-                      autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-cyan-500/50 transition-all text-left"
-                    />
-                  </div>
-                </div>
-
-                {mode === 'signup' && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-1.5"
-                  >
-                    <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">تأكيد كلمة المرور</label>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
-                      <input 
-                        type="password"
-                        name="confirmPassword"
-                        id="confirmPassword"
-                        autoComplete="new-password"
-                        required={mode === 'signup'}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-cyan-500/50 transition-all text-left"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-                
-                <div className="flex items-center justify-between px-1">
-                  <label className="flex items-center gap-2 cursor-pointer group">
-                    <div className="relative w-4 h-4">
-                      <input 
-                        type="checkbox" 
-                        className="peer sr-only"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                      />
-                      <div className="w-full h-full bg-white/5 border border-white/10 rounded peer-checked:bg-cyan-500 peer-checked:border-cyan-500 transition-all flex items-center justify-center">
-                        <CheckCircle2 size={10} className="text-black scale-0 peer-checked:scale-100 transition-transform" />
-                      </div>
-                    </div>
-                    <span className="text-[10px] text-neutral-500 font-bold group-hover:text-neutral-400 transition-colors">تذكرني</span>
-                  </label>
-                  <button 
-                    type="button"
-                    onClick={() => setMode('forgot')}
-                    className="text-[10px] text-neutral-500 hover:text-cyan-400 font-bold transition-colors"
-                  >
-                    نسيت كلمة المرور؟
-                  </button>
-                </div>
-
-                {status === 'error' && (
-                  <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl">
-                    <p className="text-[10px] text-rose-400 font-bold leading-relaxed">{errorMsg}</p>
-                  </div>
-                )}
-
-                <button 
-                  type="submit"
-                  disabled={status === 'loading'}
-                  className="w-full py-4 bg-cyan-500 text-black font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-3 hover:bg-cyan-400 transition-all active:scale-[0.98] shadow-lg shadow-cyan-500/20 disabled:opacity-50"
-                >
-                  {status === 'loading' ? (
-                    <Loader2 className="animate-spin" size={18} />
-                  ) : (
-                    <>
-                      {mode === 'login' ? <LogIn size={18} /> : <UserPlus size={18} />}
-                      {mode === 'login' ? 'دخول' : 'إنشاء حساب'}
-                    </>
-                  )}
-                </button>
-
-                <div className="relative py-2">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-white/5"></div>
-                  </div>
-                  <div className="relative flex justify-center text-[10px] uppercase font-bold">
-                    <span className="bg-[#0a0d14] px-4 text-neutral-600">أو عبر الخدمات السحابية</span>
-                  </div>
-                </div>
-
+              <div className="space-y-4">
                 <button 
                   type="button"
                   onClick={handleGoogleLogin}
@@ -324,19 +162,180 @@ export default function Login() {
                   className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all active:scale-[0.98] disabled:opacity-50"
                 >
                   <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
-                  تسجيل الدخول عبر جوجل
+                  المتابعة عبر جوجل
                 </button>
 
-                <div className="flex items-center justify-center px-1">
-                  <button 
-                    type="button"
-                    onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                    className="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold transition-colors"
-                  >
-                    {mode === 'login' ? 'ليس لديك حساب؟ اضغط هنا' : 'لديك حساب بالفعل؟ سجل دخولك'}
-                  </button>
+                <div className="relative py-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-white/5"></div>
+                  </div>
+                  <div className="relative flex justify-center text-[10px] uppercase font-bold">
+                    <span className="bg-[#0a0d14] px-4 text-neutral-600">أو عبر البريد الإلكتروني</span>
+                  </div>
                 </div>
-              </form>
+
+                <form onSubmit={handleAuthSubmit} className="space-y-4">
+                  {mode === 'signup' && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="space-y-1.5"
+                    >
+                      <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">الاسم الكامل</label>
+                      <div className="relative">
+                        <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
+                        <input 
+                          type="text"
+                          name="name"
+                          id="name"
+                          required={mode === 'signup'}
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="اسم المستثمر"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-bold text-xs outline-none focus:border-cyan-500/50 transition-all text-right"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {mode === 'signup' && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="space-y-1.5"
+                    >
+                      <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">رمز الإحالة (اختياري)</label>
+                      <div className="relative">
+                        <Zap className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-500/50" size={16} />
+                        <input 
+                          type="text"
+                          name="referral"
+                          id="referral"
+                          value={referralCode}
+                          onChange={(e) => setReferralCode(e.target.value)}
+                          placeholder="مثلاً: ZINCO-2026"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-amber-500/30 transition-all text-left"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">البريد الإلكتروني</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
+                      <input 
+                        type="email"
+                        name="email"
+                        id="email"
+                        autoComplete="username email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="example@email.com"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-cyan-500/50 transition-all text-left"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">كلمة المرور</label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
+                      <input 
+                        type="password"
+                        name="password"
+                        id="password"
+                        autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-cyan-500/50 transition-all text-left"
+                      />
+                    </div>
+                  </div>
+
+                  {mode === 'signup' && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="space-y-1.5"
+                    >
+                      <label className="text-[10px] text-neutral-500 font-black uppercase tracking-widest mr-2">تأكيد كلمة المرور</label>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600" size={16} />
+                        <input 
+                          type="password"
+                          name="confirmPassword"
+                          id="confirmPassword"
+                          autoComplete="new-password"
+                          required={mode === 'signup'}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 pl-12 text-white font-mono text-xs outline-none focus:border-cyan-500/50 transition-all text-left"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  <div className="flex items-center justify-between px-1">
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <div className="relative w-4 h-4">
+                        <input 
+                          type="checkbox" 
+                          className="peer sr-only"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                        />
+                        <div className="w-full h-full bg-white/5 border border-white/10 rounded peer-checked:bg-cyan-500 peer-checked:border-cyan-500 transition-all flex items-center justify-center">
+                          <CheckCircle2 size={10} className="text-black scale-0 peer-checked:scale-100 transition-transform" />
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-neutral-500 font-bold group-hover:text-neutral-400 transition-colors">تذكرني</span>
+                    </label>
+                    <button 
+                      type="button"
+                      onClick={() => setMode('forgot')}
+                      className="text-[10px] text-neutral-500 hover:text-cyan-400 font-bold transition-colors"
+                    >
+                      نسيت كلمة المرور؟
+                    </button>
+                  </div>
+
+                  {status === 'error' && (
+                    <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+                      <p className="text-[10px] text-rose-400 font-bold leading-relaxed">{errorMsg}</p>
+                    </div>
+                  )}
+
+                  <button 
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="w-full py-4 bg-cyan-500 text-black font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-3 hover:bg-cyan-400 transition-all active:scale-[0.98] shadow-lg shadow-cyan-500/20 disabled:opacity-50"
+                  >
+                    {status === 'loading' ? (
+                      <Loader2 className="animate-spin" size={18} />
+                    ) : (
+                      <>
+                        {mode === 'login' ? <LogIn size={18} /> : <UserPlus size={18} />}
+                        {mode === 'login' ? 'دخول' : 'إنشاء حساب'}
+                      </>
+                    )}
+                  </button>
+
+                  <div className="flex items-center justify-center px-1">
+                    <button 
+                      type="button"
+                      onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                      className="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold transition-colors"
+                    >
+                      {mode === 'login' ? 'ليس لديك حساب؟ اضغط هنا' : 'لديك حساب بالفعل؟ سجل دخولك'}
+                    </button>
+                  </div>
+                </form>
+              </div>
 
               <div className="pt-4 flex flex-col items-center gap-3">
                  <div className="flex items-center gap-4 text-[10px] text-neutral-600 font-bold">
