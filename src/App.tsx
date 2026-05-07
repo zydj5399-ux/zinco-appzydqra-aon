@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Analytics } from '@vercel/analytics/react';
 import { 
   LayoutDashboard, 
   ShieldCheck, 
@@ -299,7 +300,7 @@ export default function App() {
   const handleStopTrading = async () => {
     if (!user || stats.aiStatus !== 'active') return;
 
-    const confirmation = confirm('هل أنت متأكد من إيقاف البوت؟ سيتم إعادة المبلغ المستثمر إلى رصيدك المتاح.');
+    const confirmation = confirm('هل أنت متأكد ��ن إيقاف البوت؟ سيتم إعادة المبلغ المستثمر إلى رصيدك المتاح.');
     if (!confirmation) return;
 
     const updatedStats: UserStats = {
@@ -828,6 +829,7 @@ export default function App() {
         type={legalModal.type} 
         onClose={() => setLegalModal({ ...legalModal, isOpen: false })} 
       />
+      <Analytics />
     </div>
   );
 }
