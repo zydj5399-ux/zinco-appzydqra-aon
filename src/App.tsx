@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { 
   LayoutDashboard, 
   ShieldCheck, 
@@ -576,7 +577,7 @@ export default function App() {
                   <Crown className="w-3 h-3" />
                   نظام الربح المضاعف
                 </p>
-                <p className="text-[10px] text-neutral-400 mb-4 leading-relaxed">كلما زاد إيداعك حتى $800، زادت قوة الخوارزمية في توليد أرباح شهرية أكبر.</p>
+                <p className="text-[10px] text-neutral-400 mb-4 leading-relaxed">كلما زاد إيداعك حتى $800، زادت قوة الخوارزمية في ت��ليد أرباح شهرية أكبر.</p>
                 <button 
                   onClick={() => setActiveTab('upgrade')}
                   className="w-full py-2.5 bg-cyan-500 text-black text-xs font-bold rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:brightness-110 active:scale-95 transition-all"
@@ -845,6 +846,7 @@ export default function App() {
         type={legalModal.type} 
         onClose={() => setLegalModal({ ...legalModal, isOpen: false })} 
       />
+      <SpeedInsights />
     </div>
   );
 }
